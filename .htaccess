@@ -1,0 +1,15 @@
+Options -Indexes
+RewriteEngine On
+
+# Serve static assets directly
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Route API requests
+RewriteRule ^api/(.*)$ api/index.php [QSA,L]
+
+# Serve SPA for frontend routes
+RewriteCond %{REQUEST_URI} !^/api/
+RewriteCond %{REQUEST_URI} !^/assets/
+RewriteRule ^(.*)$ index.html [QSA,L]

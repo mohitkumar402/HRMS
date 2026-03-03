@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enterprise HRMS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT:'#4F46E5', 50:'#EEF2FF', 100:'#E0E7FF', 500:'#6366F1', 600:'#4F46E5', 700:'#4338CA' }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="h-full bg-gray-100 flex overflow-hidden">
+
+<!-- ═══════════════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════════════════ -->
+<aside id="sidebar" class="w-64 bg-slate-900 text-white flex flex-col flex-shrink-0 transition-all duration-300 z-40">
+  <!-- Logo -->
+  <div class="flex items-center gap-3 px-6 py-5 border-b border-slate-700">
+    <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
+      <i class="fa-solid fa-building-user text-white text-sm"></i>
+    </div>
+    <div class="overflow-hidden">
+      <div class="font-bold text-sm leading-tight">Enterprise HRMS</div>
+      <div class="text-slate-400 text-xs" id="companyName">Loading...</div>
+    </div>
+  </div>
+
+  <!-- User Info -->
+  <div class="px-4 py-3 border-b border-slate-700">
+    <div class="flex items-center gap-3 p-2 rounded-lg bg-slate-800">
+      <div class="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" id="sidebarAvatar">U</div>
+      <div class="min-w-0">
+        <div class="text-sm font-medium truncate" id="sidebarUserName">Loading...</div>
+        <div class="text-xs text-slate-400 truncate" id="sidebarUserRole">-</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="flex-1 overflow-y-auto py-3 px-3 space-y-0.5" id="sidebarNav">
+    <!-- Populated by JS -->
+  </nav>
+
+  <!-- Bottom Actions -->
+  <div class="p-3 border-t border-slate-700 space-y-1">
+    <button onclick="navigate('settings')" class="nav-item w-full text-left" data-page="settings">
+      <i class="fa-solid fa-gear w-5 text-center"></i><span>Settings</span>
+    </button>
+    <button onclick="logout()" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors text-sm">
+      <i class="fa-solid fa-right-from-bracket w-5 text-center"></i><span>Sign Out</span>
+    </button>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════════
+     MAIN CONTENT
+════════════════════════════════════════════════════ -->
+<div class="flex-1 flex flex-col overflow-hidden">
+
+  <!-- Top Header -->
+  <header class="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between flex-shrink-0">
+    <div class="flex items-center gap-3">
+      <button onclick="toggleSidebar()" class="text-gray-500 hover:text-gray-700 lg:hidden">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <div>
+        <h2 class="text-lg font-semibold text-gray-800" id="pageTitle">Dashboard</h2>
+        <div class="text-xs text-gray-500" id="breadcrumb">Home</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <!-- Search -->
+      <div class="hidden md:flex items-center gap-2 bg-gray-100 rounded-lg px-3 py-2">
+        <i class="fa-solid fa-search text-gray-400 text-sm"></i>
+        <input type="text" placeholder="Search..." class="bg-transparent text-sm outline-none w-48" id="globalSearch">
+      </div>
+      <!-- Notifications -->
+      <div class="relative">
+        <button onclick="toggleNotifications()" class="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg">
+          <i class="fa-solid fa-bell"></i>
+          <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" id="notifDot" style="display:none"></span>
+        </button>
+        <div id="notifPanel" class="hidden absolute right-0 top-10 w-80 bg-white border border-gray-200 rounded-xl shadow-xl z-50">
+          <div class="p-4 border-b flex justify-between items-center">
+            <span class="font-semibold text-sm">Notifications</span>
+            <button onclick="markAllRead()" class="text-xs text-indigo-600 hover:text-indigo-800">Mark all read</button>
+          </div>
+          <div class="max-h-72 overflow-y-auto" id="notifList">
+            <p class="text-center text-gray-500 text-sm p-4">Loading...</p>
+          </div>
+        </div>
+      </div>
+      <!-- User Menu -->
+      <div class="relative">
+        <button onclick="toggleUserMenu()" class="flex items-center gap-2 hover:bg-gray-100 rounded-lg px-2 py-1.5 transition">
+          <div class="w-7 h-7 bg-indigo-600 rounded-full flex items-center justify-center text-white text-xs font-bold" id="headerAvatar">U</div>
+          <span class="text-sm font-medium text-gray-700 hidden sm:block" id="headerUserName">User</span>
+          <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
+        </button>
+        <div id="userMenu" class="hidden absolute right-0 top-10 w-48 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden">
+          <div class="p-3 border-b">
+            <p class="text-sm font-medium text-gray-800" id="menuUserName">User</p>
+            <p class="text-xs text-gray-500" id="menuUserEmail">-</p>
+          </div>
+          <div class="py-1">
+            <button onclick="navigate('profile'); closeMenus();" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+              <i class="fa-solid fa-user mr-2 text-gray-400"></i>My Profile
+            </button>
+            <button onclick="navigate('settings'); closeMenus();" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+              <i class="fa-solid fa-gear mr-2 text-gray-400"></i>Settings
+            </button>
+            <hr class="my-1">
+            <button onclick="logout()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+              <i class="fa-solid fa-right-from-bracket mr-2"></i>Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Content -->
+  <main class="flex-1 overflow-auto p-6" id="mainContent">
+    <div class="flex items-center justify-center h-64">
+      <div class="text-center">
+        <i class="fa-solid fa-spinner fa-spin text-indigo-600 text-3xl mb-3"></i>
+        <p class="text-gray-500">Loading...</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     MODAL
+════════════════════════════════════════════════════ -->
+<div id="modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col" id="modalBox">
+    <div class="flex items-center justify-between px-6 py-4 border-b flex-shrink-0">
+      <h3 class="text-lg font-semibold" id="modalTitle">Modal</h3>
+      <button onclick="closeModal()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="overflow-y-auto p-6 flex-1" id="modalBody"></div>
+    <div class="px-6 py-4 border-t flex gap-3 justify-end flex-shrink-0" id="modalFooter"></div>
+  </div>
+</div>
+
+<!-- Toast Notifications -->
+<div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

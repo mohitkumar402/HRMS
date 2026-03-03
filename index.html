@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EKIONS HRMS — Login | TechVision Pvt Ltd</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    .split-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ─── LEFT PANEL ─── */
+    .left-panel {
+      width: 45%;
+      min-height: 100vh;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 3rem 4rem;
+      position: relative;
+      z-index: 2;
+      box-shadow: 4px 0 40px rgba(0,0,0,0.08);
+    }
+
+    /* ─── RIGHT PANEL ─── */
+    .right-panel {
+      width: 55%;
+      min-height: 100vh;
+      background: linear-gradient(145deg, #020817 0%, #0a1628 30%, #0d1f3c 60%, #071029 100%);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Mesh grid overlay */
+    .right-panel::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+
+    /* Glow orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+    }
+    .orb-1 { width:420px; height:420px; top:-120px; right:-80px;  background: radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 65%); }
+    .orb-2 { width:320px; height:320px; bottom:-80px; left:-60px;  background: radial-gradient(circle, rgba(6,182,212,0.2) 0%, transparent 65%); }
+    .orb-3 { width:280px; height:280px; top:45%; left:30%; background: radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 65%); }
+
+    /* ─── SCROLLING CARDS ─── */
+    @keyframes tickerDown {
+      0%   { transform: translateY(-50%); }
+      100% { transform: translateY(0); }
+    }
+    @keyframes tickerUp {
+      0%   { transform: translateY(0); }
+      100% { transform: translateY(-50%); }
+    }
+    .ticker-down { animation: tickerDown 24s linear infinite; }
+    .ticker-up   { animation: tickerUp   20s linear infinite; }
+
+    .module-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 16px 18px;
+      backdrop-filter: blur(8px);
+      transition: border-color 0.2s;
+      flex-shrink: 0;
+    }
+    .module-card:hover { border-color: rgba(99,102,241,0.4); }
+
+    /* fade masks on scroll area */
+    .fade-top {
+      background: linear-gradient(to bottom, #020817 0%, transparent 100%);
+      position: absolute; top: 0; left: 0; right: 0; height: 80px; z-index: 5; pointer-events: none;
+    }
+    .fade-bottom {
+      background: linear-gradient(to top, #071029 0%, transparent 100%);
+      position: absolute; bottom: 0; left: 0; right: 0; height: 80px; z-index: 5; pointer-events: none;
+    }
+
+    /* ─── GRADIENT TEXT ─── */
+    .gradient-text {
+      background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 45%, #22d3ee 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ─── FORM INPUTS ─── */
+    .form-input {
+      width: 100%;
+      padding: 13px 16px 13px 44px;
+      background: #F8FAFC;
+      border: 1.5px solid #E5E9F2;
+      border-radius: 12px;
+      font-size: 14px;
+      color: #1a2332;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+    .form-input:focus {
+      background: #ffffff;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 4px rgba(99,102,241,0.08);
+    }
+    .form-input::placeholder { color: #a0aec0; }
+
+    .input-wrap { position: relative; }
+    .input-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      color: #9ca3af; font-size: 14px;
+    }
+    .input-right {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      color: #9ca3af; cursor: pointer; font-size: 14px; transition: color 0.15s;
+    }
+    .input-right:hover { color: #6366f1; }
+
+    /* ─── SIGN IN BUTTON ─── */
+    .btn-signin {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: all 0.2s;
+      box-shadow: 0 8px 24px rgba(99,102,241,0.35);
+      letter-spacing: 0.02em;
+    }
+    .btn-signin:hover:not(:disabled) {
+      background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+      box-shadow: 0 12px 32px rgba(99,102,241,0.45);
+      transform: translateY(-1px);
+    }
+    .btn-signin:disabled { opacity: 0.75; cursor: not-allowed; transform: none; }
+
+    /* ─── DEMO PILLS ─── */
+    .demo-pill {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1.5px solid #F0F2F8;
+      background: #FAFBFF;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: left;
+    }
+    .demo-pill:hover { border-color: #c7d2fe; background: #eef2ff; }
+
+    /* ─── STAT CHIPS ─── */
+    .stat-chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 100px;
+      backdrop-filter: blur(8px);
+    }
+
+    /* ─── FADE IN ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .anim { opacity: 0; animation: fadeUp 0.55s ease forwards; }
+    .d1 { animation-delay: 0.05s; }
+    .d2 { animation-delay: 0.15s; }
+    .d3 { animation-delay: 0.22s; }
+    .d4 { animation-delay: 0.30s; }
+    .d5 { animation-delay: 0.38s; }
+
+    /* ─── ALERT ─── */
+    #alert { display: none; }
+    #alert.show { display: flex; }
+
+    /* ─── LABEL ─── */
+    .field-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+
+    /* scrollbar hide */
+    .no-scroll { scrollbar-width: none; overflow: hidden; }
+    .no-scroll::-webkit-scrollbar { display: none; }
+
+    @media (max-width: 1024px) {
+      .left-panel  { width: 100%; padding: 2.5rem 2rem; }
+      .right-panel { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="split-layout">
+
+  <!-- ══════════════════════════════════════════════
+       LEFT  —  LOGIN FORM
+  ══════════════════════════════════════════════ -->
+  <div class="left-panel">
+
+    <!-- Logo -->
+    <div class="anim d1" style="margin-bottom:44px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(99,102,241,0.35);">
+          <i class="fa-solid fa-building-user" style="color:#fff;font-size:18px;"></i>
+        </div>
+        <div>
+          <div style="font-size:17px;font-weight:800;color:#0f172a;letter-spacing:-0.02em;">
+            EKIONS <span style="font-weight:400;color:#6366f1;">HRMS</span>
+          </div>
+          <div style="font-size:10px;color:#94a3b8;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;margin-top:1px;">
+            TechVision Pvt Ltd
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Heading -->
+    <div class="anim d2" style="margin-bottom:36px;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#6366f1;margin-bottom:10px;">
+        Secure Enterprise Login
+      </div>
+      <h1 style="font-size:30px;font-weight:800;color:#0f172a;line-height:1.2;letter-spacing:-0.03em;">
+        Welcome back,<br>
+        <span style="color:#6366f1;">sign in to continue</span>
+      </h1>
+      <p style="font-size:13.5px;color:#64748b;margin-top:10px;line-height:1.6;">
+        Access your workforce management dashboard securely.
+      </p>
+    </div>
+
+    <!-- Alert -->
+    <div id="alert" class="anim d3" style="margin-bottom:20px;padding:12px 16px;border-radius:10px;font-size:13px;align-items:center;gap:10px;"></div>
+
+    <!-- Form -->
+    <form id="loginForm" class="anim d3" style="display:flex;flex-direction:column;gap:20px;">
+      <div>
+        <label class="field-label">Email Address</label>
+        <div class="input-wrap">
+          <i class="fa-solid fa-envelope input-icon"></i>
+          <input type="email" id="email" class="form-input" placeholder="you@company.com" value="admin@hrms.com">
+        </div>
+      </div>
+
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <label class="field-label" style="margin-bottom:0;">Password</label>
+          <a href="#" style="font-size:12px;color:#6366f1;font-weight:600;text-decoration:none;">Forgot password?</a>
+        </div>
+        <div class="input-wrap">
+          <i class="fa-solid fa-lock input-icon"></i>
+          <input type="password" id="password" class="form-input" placeholder="••••••••" value="Admin@123">
+          <span class="input-right" onclick="togglePassword()">
+            <i class="fa-solid fa-eye" id="eyeIcon"></i>
+          </span>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="remember" style="width:15px;height:15px;accent-color:#6366f1;cursor:pointer;">
+        <label for="remember" style="font-size:13px;color:#475569;cursor:pointer;user-select:none;">Keep me signed in</label>
+      </div>
+
+      <button type="submit" class="btn-signin" id="loginBtn">
+        <i class="fa-solid fa-right-to-bracket"></i>
+        <span id="loginBtnText">Sign In to Dashboard</span>
+      </button>
+    </form>
+
+    <!-- Divider -->
+    <div class="anim d4" style="display:flex;align-items:center;gap:12px;margin:28px 0 20px;">
+      <div style="flex:1;height:1px;background:#f1f5f9;"></div>
+      <span style="font-size:11px;color:#94a3b8;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;">Quick Demo Access</span>
+      <div style="flex:1;height:1px;background:#f1f5f9;"></div>
+    </div>
+
+    <!-- Demo Accounts -->
+    <div class="anim d4" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <button class="demo-pill" onclick="setDemo('admin@hrms.com')">
+        <span style="width:30px;height:30px;border-radius:8px;background:#eef2ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="fa-solid fa-crown" style="color:#6366f1;font-size:12px;"></i>
+        </span>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:#1e293b;">Super Admin</div>
+          <div style="font-size:10px;color:#94a3b8;">Full access</div>
+        </div>
+      </button>
+      <button class="demo-pill" onclick="setDemo('hr@hrms.com')">
+        <span style="width:30px;height:30px;border-radius:8px;background:#ecfdf5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="fa-solid fa-users" style="color:#059669;font-size:12px;"></i>
+        </span>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:#1e293b;">HR Manager</div>
+          <div style="font-size:10px;color:#94a3b8;">HR access</div>
+        </div>
+      </button>
+      <button class="demo-pill" onclick="setDemo('manager@hrms.com')">
+        <span style="width:30px;height:30px;border-radius:8px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="fa-solid fa-user-tie" style="color:#2563eb;font-size:12px;"></i>
+        </span>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:#1e293b;">Manager</div>
+          <div style="font-size:10px;color:#94a3b8;">Team access</div>
+        </div>
+      </button>
+      <button class="demo-pill" onclick="setDemo('john.doe@hrms.com')">
+        <span style="width:30px;height:30px;border-radius:8px;background:#fffbeb;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="fa-solid fa-user" style="color:#d97706;font-size:12px;"></i>
+        </span>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:#1e293b;">Employee</div>
+          <div style="font-size:10px;color:#94a3b8;">Self-service</div>
+        </div>
+      </button>
+    </div>
+
+    <!-- Footer -->
+    <div class="anim d5" style="margin-top:auto;padding-top:36px;text-align:center;">
+      <p style="font-size:11px;color:#cbd5e1;">
+        © 2025 <strong style="color:#94a3b8;">TechVision Pvt Ltd</strong> · EKIONS HRMS v1.0 · All rights reserved
+      </p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       RIGHT  —  BRANDING PANEL
+  ══════════════════════════════════════════════ -->
+  <div class="right-panel">
+    <!-- Glow orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <!-- Content -->
+    <div style="position:relative;z-index:2;display:flex;flex-direction:column;height:100%;">
+
+      <!-- Hero Section -->
+      <div style="padding:52px 56px 36px;flex-shrink:0;">
+        <!-- Live badge -->
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:6px 16px;margin-bottom:28px;">
+          <span style="width:7px;height:7px;border-radius:50%;background:#10b981;display:inline-block;box-shadow:0 0 8px #10b981;animation:pulse 2s infinite;"></span>
+          <span style="font-size:11px;color:rgba(255,255,255,0.6);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;">Enterprise · Version 1.0 · Live</span>
+        </div>
+
+        <!-- Brand label -->
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:12px;">
+          TechVision Pvt Ltd presents
+        </div>
+
+        <!-- Main headline -->
+        <h2 style="font-size:52px;font-weight:900;line-height:1.0;letter-spacing:-0.04em;margin-bottom:6px;">
+          <span style="color:#ffffff;">Enterprise</span>
+        </h2>
+        <h2 style="font-size:52px;font-weight:900;line-height:1.05;letter-spacing:-0.04em;margin-bottom:16px;">
+          <span class="gradient-text">HRMS Software</span>
+        </h2>
+        <div style="font-size:13px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:20px;">
+          ⚡ Powered by EKIONS Platform
+        </div>
+        <p style="font-size:14.5px;color:rgba(255,255,255,0.55);line-height:1.75;max-width:440px;">
+          The intelligent HR platform designed for growing enterprises — automate payroll, manage talent, and drive performance from a single unified workspace.
+        </p>
+
+        <!-- Stat chips -->
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;">
+          <div class="stat-chip">
+            <i class="fa-solid fa-users" style="color:#818cf8;font-size:12px;"></i>
+            <span style="font-size:12px;color:rgba(255,255,255,0.7);font-weight:500;">500+ Employees</span>
+          </div>
+          <div class="stat-chip">
+            <i class="fa-solid fa-bolt" style="color:#fbbf24;font-size:12px;"></i>
+            <span style="font-size:12px;color:rgba(255,255,255,0.7);font-weight:500;">Real-time Sync</span>
+          </div>
+          <div class="stat-chip">
+            <i class="fa-solid fa-shield-halved" style="color:#34d399;font-size:12px;"></i>
+            <span style="font-size:12px;color:rgba(255,255,255,0.7);font-weight:500;">Role-based Access</span>
+          </div>
+          <div class="stat-chip">
+            <i class="fa-solid fa-chart-line" style="color:#67e8f9;font-size:12px;"></i>
+            <span style="font-size:12px;color:rgba(255,255,255,0.7);font-weight:500;">Advanced Analytics</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scrolling Modules -->
+      <div style="flex:1;overflow:hidden;position:relative;padding:0 56px 40px;">
+        <div class="fade-top"></div>
+        <div class="fade-bottom"></div>
+
+        <div style="display:flex;gap:14px;height:100%;">
+
+          <!-- Column A — scrolls DOWN -->
+          <div style="flex:1;overflow:hidden;">
+            <div class="ticker-down" style="display:flex;flex-direction:column;gap:12px;">
+
+              <div class="module-card">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-id-card" style="color:#fff;font-size:14px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:#f1f5f9;">Employee Directory</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Profiles · Docs · Org Chart</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="module-card">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#059669,#0d9488);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-calendar-check" style="color:#fff;font-size:14px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:#f1f5f9;">Leave Management</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Apply · Approve · Track</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="module-card">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#d97706,#b45309);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-fingerprint" style="color:#fff;font-size:14px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:#f1f5f9;">Attendance Tracking</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Check-in · Shifts · Reports</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="module-card">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#be185d,#9d174d);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-money-bill-wave" style="color:#fff;font-size:14px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:#f1f5f9;">Payroll & Payslips</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Salary · Deductions · Payslip</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="module-card">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#0891b2,#0e7490);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-laptop" style="color:#fff;font-size:14px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:#f1f5f9;">Asset Management</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Assign · Track · Audit</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Duplicate for seamless loop -->
+              <div class="module-card">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-id-card" style="color:#fff;font-size:14px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:#f1f5f9;">Employee Directory</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Profiles · Docs · Org Chart</div>
+                  </div>
+                </div>
+              </div>
+              <div class="module-card">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#059669,#0d9488);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-calendar-check" style="color:#fff;font-size:14px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:#f1f5f9;">Leave Management</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Apply · Approve · Track</div>
+                  </div>
+                </div>
+              </div>
+              <div class="module-card">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#d97706,#b45309);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-fingerprint" style="color:#fff;font-size:14px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:#f1f5f9;">Attendance Tracking</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Check-in · Shifts · Reports</div>
+                  </div>
+                </div>
+              </div>
+              <div class="module-card">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#be185d,#9d174d);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-money-bill-wave" style="color:#fff;font-size:14px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:#f1f5f9;">Payroll & Payslips</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Salary · Deductions · Payslip</div>
+                  </div>
+                </div>
+              </div>
+              <div class="module-card">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#0891b2,#0e7490);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-laptop" style="color:#fff;font-size:14px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:#f1f5f9;">Asset Management</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Assign · Track · Audit</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Column B — scrolls UP -->
+          <div style="flex:1;overflow:hidden;">
+            <div class="ticker-up" style="display:flex;flex-direction:column;gap:12px;">
+
+              <div class="module-card">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#0284c7,#0369a1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-chart-line" style="color:#fff;font-size:14px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:#f1f5f9;">Performance Reviews</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Goals · KPIs · Appraisals</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="module-card">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#dc2626,#b91c1c);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-briefcase" style="color:#fff;font-size:14px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:#f1f5f9;">Recruitment</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Jobs · Interviews · Offers</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="module-card">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-graduation-cap" style="color:#fff;font-size:14px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:#f1f5f9;">Training & L&D</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Programs · Enroll · Track</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="module-card">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#0f766e,#0d9488);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-chart-pie" style="color:#fff;font-size:14px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:#f1f5f9;">Reports & Analytics</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Insights · Export · Dashboard</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="module-card">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#b45309,#92400e);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-door-open" style="color:#fff;font-size:14px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:#f1f5f9;">Exit Management</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Interviews · Clearance · F&F</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Duplicate for seamless loop -->
+              <div class="module-card">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#0284c7,#0369a1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-chart-line" style="color:#fff;font-size:14px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:#f1f5f9;">Performance Reviews</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Goals · KPIs · Appraisals</div>
+                  </div>
+                </div>
+              </div>
+              <div class="module-card">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#dc2626,#b91c1c);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-briefcase" style="color:#fff;font-size:14px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:#f1f5f9;">Recruitment</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Jobs · Interviews · Offers</div>
+                  </div>
+                </div>
+              </div>
+              <div class="module-card">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-graduation-cap" style="color:#fff;font-size:14px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:#f1f5f9;">Training & L&D</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Programs · Enroll · Track</div>
+                  </div>
+                </div>
+              </div>
+              <div class="module-card">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#0f766e,#0d9488);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-chart-pie" style="color:#fff;font-size:14px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:#f1f5f9;">Reports & Analytics</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Insights · Export · Dashboard</div>
+                  </div>
+                </div>
+              </div>
+              <div class="module-card">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#b45309,#92400e);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-door-open" style="color:#fff;font-size:14px;"></i>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:#f1f5f9;">Exit Management</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;">Interviews · Clearance · F&F</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<style>
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+</style>
+
+<script src="assets/js/utils.js"></script>
+<script>
+  const API = 'api';
+
+  function setDemo(email) {
+    document.getElementById('email').value = email;
+    document.getElementById('password').value = 'Admin@123';
+  }
+
+  function togglePassword() {
+    const pw   = document.getElementById('password');
+    const icon = document.getElementById('eyeIcon');
+    if (pw.type === 'password') { pw.type = 'text'; icon.className = 'fa-solid fa-eye-slash'; }
+    else                        { pw.type = 'password'; icon.className = 'fa-solid fa-eye'; }
+  }
+
+  function showAlert(msg, type = 'error') {
+    const el = document.getElementById('alert');
+    const isErr = type === 'error';
+    el.style.cssText = `display:flex;margin-bottom:20px;padding:12px 16px;border-radius:10px;font-size:13px;align-items:center;gap:10px;
+      background:${isErr ? '#fef2f2' : '#f0fdf4'};
+      border:1.5px solid ${isErr ? '#fecaca' : '#bbf7d0'};
+      color:${isErr ? '#dc2626' : '#16a34a'};`;
+    el.innerHTML = `<i class="fa-solid fa-${isErr ? 'circle-exclamation' : 'circle-check'}"></i><span>${msg}</span>`;
+    el.classList.add('show');
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn      = document.getElementById('loginBtn');
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    document.getElementById('alert').classList.remove('show');
+    document.getElementById('alert').style.display = 'none';
+
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>Authenticating…</span>`;
+
+    try {
+      const res  = await fetch(`${API}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        localStorage.setItem('hrms_token', data.data.access_token);
+        localStorage.setItem('hrms_user',  JSON.stringify(data.data.user));
+        btn.innerHTML = `<i class="fa-solid fa-check"></i><span>Redirecting to Dashboard…</span>`;
+        window.location.href = 'app.html';
+      } else {
+        showAlert(data.message || 'Login failed. Please check your credentials.');
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i><span id="loginBtnText">Sign In to Dashboard</span>`;
+      }
+    } catch (err) {
+      showAlert('Connection error. Please ensure XAMPP is running.');
+      btn.disabled = false;
+      btn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i><span id="loginBtnText">Sign In to Dashboard</span>`;
+    }
+  });
+
+  if (localStorage.getItem('hrms_token')) window.location.href = 'app.html';
+</script>
+</body>
+</html>
