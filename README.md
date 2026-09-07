@@ -1,345 +1,274 @@
-# 🏢 Enterprise HRMS
-## Human Resource Management System — v1.0
+# HRMS — Enterprise Human Resource Management System
 
-A production-ready, full-stack Enterprise HRMS built with PHP 8 + MySQL + Modern JavaScript.
+> A full-stack HRMS for managing the employee lifecycle, attendance, leave, payroll, recruitment, performance, and HR analytics.
+
+**Stack:** PHP 8.2 · MySQL 8 · JavaScript · Tailwind CSS · REST API · JWT · Chart.js
 
 ---
 
-## 🚀 Quick Setup (5 Minutes)
+## Overview
 
-### Prerequisites
-- **XAMPP** with Apache + MySQL running
-- PHP 8.0+
+HRMS is a modular human-resource platform designed around real business workflows rather than isolated CRUD screens.
 
-### Steps
+It brings core HR operations into one application:
 
-**1. Place the project**
+- Employee management
+- Attendance & shifts
+- Leave & approvals
+- Payroll
+- Recruitment / ATS
+- Performance management
+- HR analytics & reports
+- Employee self-service
+- Notifications
+- Role-based access control
+
+---
+
+## Product Areas
+
+| Module | What it covers |
+|---|---|
+| **Core HR** | Employee profiles, departments, designations, organization structure, employment history, documents |
+| **Attendance** | Check-in/out, geolocation support, shifts, overtime, holidays, attendance reports |
+| **Leave** | Leave types, applications, approvals, balances, calendar, automatic balance deduction |
+| **Payroll** | Salary structures, payroll runs, payslips, PF, ESI, TDS, professional tax, approvals |
+| **Recruitment / ATS** | Jobs, candidates, applications, Kanban pipeline, interviews, feedback, stage tracking |
+| **Performance** | OKRs/KPIs, goals, performance cycles, 360° reviews, progress tracking |
+| **Analytics** | Headcount, attrition, attendance, leave, payroll, recruitment and workforce reports |
+| **Employee Self-Service** | Profile, attendance, leave, payslips, goals, notifications |
+| **Notifications** | In-app alerts, leave workflow notifications and unread tracking |
+
+---
+
+## Architecture
+
+```text
+Browser
+   │
+   ▼
+HTML / Tailwind CSS / Vanilla JavaScript
+   │
+   │ Fetch API
+   ▼
+PHP REST API
+   │
+   ├── Authentication & JWT
+   ├── RBAC / Authorization
+   ├── Controllers
+   ├── Validation
+   └── Business Logic
+   │
+   ▼
+MySQL 8
+   └── 30+ relational tables
 ```
-Copy folder → C:\xampp\htdocs\HRMs\
-```
 
-**2. Run Database Setup**
-Open browser → `http://localhost/HRMs/database/setup.php`
-
-**3. Login**
-Open browser → `http://localhost/HRMs/`
-- Email: `admin@hrms.com`
-- Password: `Admin@123`
+The backend follows a lightweight custom MVC-style structure with a REST API layer, authentication middleware, controllers, helpers, and a relational MySQL database.
 
 ---
 
-## 🔐 Demo Accounts
+## Security
 
-| Role | Email | Password |
-|------|-------|----------|
-| Super Admin | admin@hrms.com | Admin@123 |
-| HR Manager | hr@hrms.com | Admin@123 |
-| HR Executive | hr2@hrms.com | Admin@123 |
-| Manager | manager@hrms.com | Admin@123 |
-| Employee | john.doe@hrms.com | Admin@123 |
-| Finance | finance@hrms.com | Admin@123 |
-| Recruiter | recruiter@hrms.com | Admin@123 |
-
----
-
-## 📋 Modules Implemented
-
-### ✅ Core HR
-- Employee master with full profiles
-- Department & designation hierarchy
-- Organization chart
-- Employment history & lifecycle
-- Document management
-
-### ✅ Authentication & Security
-- JWT-based authentication
+- JWT authentication with token expiry
 - Role-Based Access Control (RBAC)
-- Account lockout (5 failed attempts → 30 min lock)
-- Complete audit trail
+- Account lockout after repeated failed logins
 - Bcrypt password hashing
+- PDO prepared statements
+- XSS protection through output escaping
+- CORS configuration
+- Audit trail for critical operations
 
-### ✅ Time & Attendance
-- Check-in / Check-out with geolocation support
-- Shift management & assignment
-- Overtime tracking
-- Monthly attendance reports
-- Holiday calendar
-
-### ✅ Leave Management
-- 8 leave types (CL, SL, EL, ML, PL, etc.)
-- Leave application workflow
-- Manager approval/rejection
-- Leave balance tracking
-- Leave calendar view
-- Auto-deduct on approval
-
-### ✅ Payroll
-- Salary structure management
-- Monthly payroll runs
-- Auto payslip generation (pro-rated)
-- PF, ESI, TDS, Professional Tax
-- Payroll approval workflow
-- My Payslips for employees
-
-### ✅ Recruitment & ATS
-- Job posting management
-- Candidate database
-- Application pipeline (Kanban)
-- Interview scheduling
-- Feedback collection
-- Stage progression tracking
-
-### ✅ Performance Management
-- OKR/KPI goal setting
-- Goal progress tracking
-- Performance cycles
-- 360° review framework
-- Performance analytics
-
-### ✅ HR Analytics & Reports
-- Headcount report
-- Attrition analysis
-- Attendance summary
-- Leave utilization
-- Payroll summary
-- Diversity & inclusion
-- Recruitment metrics
-- Chart.js visualizations
-
-### ✅ Employee Self-Service
-- Personal profile view
-- Check-in/Check-out
-- Leave application
-- Payslip access
-- Goal tracking
-- Notification center
-
-### ✅ Notifications
-- In-app notification system
-- Leave request/approval alerts
-- Real-time unread count
+> **Production note:** The included configuration contains development/demo values. Replace secrets, credentials, database settings, and environment configuration before deployment.
 
 ---
 
-## 🛠 Technology Stack
+## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Backend | PHP 8.2 (Custom MVC REST API) |
-| Database | MySQL 8 (InnoDB, 30+ tables) |
-| Frontend | HTML5 + Tailwind CSS + Vanilla JS |
-| Charts | Chart.js 4 |
-| Icons | Font Awesome 6 |
-| Auth | JWT (HS256, no external library) |
-| HTTP Client | Fetch API |
+**Frontend**  
+HTML5 · Tailwind CSS · Vanilla JavaScript · Chart.js · Font Awesome
+
+**Backend**  
+PHP 8.2 · Custom MVC architecture · REST API
+
+**Database**  
+MySQL 8 · InnoDB · Foreign keys · Indexed relational schema
+
+**Authentication**  
+JWT · RBAC · Bcrypt
+
+**Client communication**  
+Fetch API · JSON
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
-```
+```text
 HRMs/
-├── index.html              # Login page
-├── app.html                # Main SPA shell
-├── .htaccess               # URL routing
+├── index.html
+├── app.html
+├── .htaccess
 ├── api/
-│   ├── index.php           # API router
+│   ├── index.php
 │   ├── config/
-│   │   ├── config.php      # App configuration
-│   │   └── database.php    # DB connection (Singleton)
 │   ├── helpers/
-│   │   ├── JWT.php         # JWT implementation
-│   │   └── Response.php    # API responses + Validator
 │   ├── middleware/
-│   │   └── Auth.php        # Authentication middleware
 │   └── controllers/
-│       ├── AuthController.php
-│       ├── EmployeeController.php
-│       ├── AttendanceController.php
-│       ├── LeaveController.php
-│       ├── PayrollController.php
-│       ├── RecruitmentController.php
-│       ├── PerformanceController.php
-│       ├── DashboardController.php
-│       └── ReportController.php
 ├── database/
-│   ├── schema.sql          # Complete DB schema (30+ tables)
-│   ├── seed.sql            # Sample data
-│   └── setup.php           # One-click installer
+│   ├── schema.sql
+│   ├── seed.sql
+│   └── setup.php
 └── assets/
-    ├── css/app.css         # Global styles
+    ├── css/
     └── js/
-        ├── utils.js        # Utilities, API client, helpers
-        └── app.js          # Main application logic
 ```
 
 ---
 
-## 🔌 API Reference
+## Getting Started
 
-### Authentication
-```
-POST /api/auth/login          Login
-POST /api/auth/logout         Logout
-GET  /api/auth/me             Current user info
-POST /api/auth/refresh        Refresh token
-POST /api/auth/change-password
-```
+### Requirements
 
-### Employees
-```
-GET  /api/employees           List (paginated, filterable)
-POST /api/employees           Create employee
-GET  /api/employees/{id}      Employee detail
-PUT  /api/employees/{id}      Update
-DEL  /api/employees/{id}      Terminate
-GET  /api/employees/stats     Statistics
+- XAMPP or another Apache + PHP environment
+- PHP 8.0+
+- MySQL 8+
+- Apache `mod_rewrite` enabled
+
+### 1. Clone
+
+```bash
+git clone https://github.com/mohitkumar402/HRMS.git
 ```
 
-### Attendance
+Place the project inside your web server directory, for example:
+
+```text
+C:\xampp\htdocs\HRMs
 ```
+
+### 2. Configure the database
+
+Update the database credentials in:
+
+```text
+api/config/database.php
+```
+
+Then run the database setup script or import the provided SQL schema and seed files.
+
+### 3. Configure the application
+
+Review:
+
+```text
+api/config/config.php
+```
+
+Set a strong JWT secret and the correct application URL for your environment.
+
+### 4. Launch
+
+Open the project through your local Apache server:
+
+```text
+http://localhost/HRMs/
+```
+
+---
+
+## Demo Roles
+
+The seed data includes accounts for several application roles, including:
+
+**Super Admin · HR Manager · HR Executive · Manager · Employee · Finance · Recruiter**
+
+For security, change or remove all demo credentials before exposing the application to a real environment.
+
+---
+
+## API Surface
+
+The REST API is organized around the major HR domains:
+
+```text
+/auth
+/employees
+/attendance
+/leaves
+/payroll
+/recruitment
+/performance
+/reports
+```
+
+Examples include:
+
+```text
+POST /api/auth/login
+GET  /api/auth/me
+GET  /api/employees
+POST /api/employees
 POST /api/attendance/checkin
 POST /api/attendance/checkout
-GET  /api/attendance          List
-GET  /api/attendance/today    Today summary
-GET  /api/attendance/my-status
-GET  /api/attendance/report
-```
-
-### Leave
-```
-GET  /api/leaves              List requests
-POST /api/leaves              Apply for leave
-PUT  /api/leaves/{id}/approve Approve/Reject
-PUT  /api/leaves/{id}/cancel  Cancel
-GET  /api/leaves/balance      Leave balances
-GET  /api/leaves/types        Leave types
-GET  /api/leaves/calendar     Calendar view
-```
-
-### Payroll
-```
-GET  /api/payroll/runs            All runs
-POST /api/payroll/runs            Create run
-GET  /api/payroll/runs/{id}       Run detail
-PUT  /api/payroll/runs/{id}/approve
-GET  /api/payroll/payslip/{id}    Payslip detail
-GET  /api/payroll/my-payslips
-GET  /api/payroll/salary-structures
-POST /api/payroll/salary-structures
-GET  /api/payroll/analytics
-```
-
-### Recruitment
-```
+POST /api/leaves
+GET  /api/leaves/balance
+GET  /api/payroll/runs
 GET  /api/recruitment/jobs
-POST /api/recruitment/jobs
-PUT  /api/recruitment/jobs/{id}
-GET  /api/recruitment/jobs/{id}/applications
-PUT  /api/recruitment/applications/{id}/stage
-POST /api/recruitment/applications/{id}/interview
-PUT  /api/recruitment/interviews/{id}/feedback
-POST /api/recruitment/candidates
-GET  /api/recruitment/stats
-```
-
-### Performance
-```
-GET  /api/performance/cycles
-POST /api/performance/cycles
 GET  /api/performance/goals
-POST /api/performance/goals
-PUT  /api/performance/goals/{id}
-GET  /api/performance/reviews
-POST /api/performance/reviews
-PUT  /api/performance/reviews/{id}/submit
-GET  /api/performance/stats
-```
-
-### Reports
-```
-GET /api/reports/headcount
-GET /api/reports/attrition
-GET /api/reports/attendance-summary
-GET /api/reports/leave-summary
-GET /api/reports/payroll-summary
-GET /api/reports/diversity
-GET /api/reports/recruitment
+GET  /api/reports/headcount
 ```
 
 ---
 
-## ⚙️ Configuration
+## Database
 
-Edit `api/config/config.php`:
-```php
-// Database (update if MySQL has a password)
-// Edit api/config/database.php:
-private string $password = 'your_mysql_password';
+The application uses a normalized MySQL schema with 30+ tables covering employees, organizational structure, attendance, leave, payroll, recruitment, performance, notifications, and auditing.
 
-// JWT Secret (change in production!)
-define('JWT_SECRET', 'your_secret_key_here');
+Key database characteristics:
 
-// App URL
-define('APP_URL', 'http://localhost/HRMs');
-```
+- Foreign-key relationships
+- Indexed queries
+- JSON fields where flexible data is useful
+- Derived/generated values where appropriate
+- Audit-oriented records
+- Multi-company-ready structure
 
 ---
 
-## 🔒 Security Features
+## Production Checklist
 
-- JWT authentication with expiry
-- Account lockout after failed attempts
-- RBAC with granular permissions
-- Complete audit trail (all actions logged)
-- Bcrypt password hashing (cost=12)
-- SQL injection prevention (PDO prepared statements)
-- XSS prevention (output escaping)
-- CORS headers configured
+Before production deployment:
 
----
-
-## 📈 Database Schema Highlights
-
-- **30+ normalized tables** with foreign keys
-- JSON columns for flexible data (skills, components)
-- Generated columns for derived values
-- Optimized indexes for performance
-- Audit trail on all critical operations
-- Multi-company ready structure
-
----
-
-## 🐛 Troubleshooting
-
-**Blank page / 404 after setup**
-- Ensure mod_rewrite is enabled in Apache
-- Check `.htaccess` is in root folder
-- Verify `AllowOverride All` in Apache config
-
-**Database connection failed**
-- Ensure XAMPP MySQL is running (green in control panel)
-- Default MySQL user: `root` with empty password
-- Edit `api/config/database.php` if different
-
-**Login fails with correct credentials**
-- Run setup.php again to verify seed data
-- Check browser console for API errors
-
----
-
-## 🚀 Production Checklist
-
-- [ ] Change `JWT_SECRET` in config.php
-- [ ] Set `APP_ENV = 'production'`
-- [ ] Set MySQL password
+- [ ] Replace all demo credentials
+- [ ] Generate a strong JWT secret
+- [ ] Configure production database credentials
 - [ ] Enable HTTPS
-- [ ] Configure SMTP for email notifications
-- [ ] Set up automated backups
-- [ ] Configure error logging
+- [ ] Set production environment configuration
+- [ ] Configure SMTP / email delivery
+- [ ] Configure automated database backups
+- [ ] Enable secure error logging
+- [ ] Review CORS and Apache configuration
+- [ ] Remove development-only setup access
 
 ---
 
-*Built with ❤️ using PHP 8 + MySQL + Tailwind CSS*
-#   H R M S  
- 
+## Why This Project
+
+HRMS was built as an example of **end-to-end business application engineering**: authentication, authorization, relational data modeling, workflow logic, reporting, dashboards, and user-facing interfaces working together as one product.
+
+The goal is not simply to demonstrate a UI — it is to model the workflows that an actual HR platform needs to support.
+
+---
+
+## Status
+
+**Version:** 1.0  
+**Type:** Full-stack enterprise application  
+**Architecture:** PHP REST API + MySQL + browser-based frontend
+
+---
+
+<p align="center">
+  <strong>Built with PHP, MySQL, JavaScript & Tailwind CSS</strong>
+</p>
